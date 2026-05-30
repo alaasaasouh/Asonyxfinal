@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Asonyx - Premium 3D Digital Solutions Agency offering immersive web design, custom digital solutions, and premium media services.">
+    <meta name="theme-color" content="#050a12">
+    <title>Asonyx — 3D Digital Solutions Agency</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══ LOADER ═══════════════════════════════════════════════════════ -->
+<div id="loader">
+    <div class="loader-inner">
+        <div class="loader-ring-wrap">
+            <svg class="loader-ring-svg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%"   stop-color="#00d9ff"/>
+                        <stop offset="100%" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+                <circle class="loader-ring-bg" cx="80" cy="80" r="70"/>
+                <circle class="loader-ring-fill" id="loaderRingEl" cx="80" cy="80" r="70"
+                        stroke="url(#ringGrad)" stroke-dasharray="439.8" stroke-dashoffset="439.8"/>
+                <circle cx="80" cy="80" r="60" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+            </svg>
+            <div class="loader-logo-img-wrap">
+                <img src="LOGOBCK.png" alt="Asonyx" class="loader-logo-img"/>
+                <div class="loader-logo-glow"></div>
+            </div>
+        </div>
+
+        <div class="loader-tagline">3D Digital Solutions Agency</div>
+        <div id="loader-percent">0%</div>
+    </div>
+</div>
+
+<!-- ═══ CANVAS (fixed, behind everything) ════════════════════════════ -->
+<div class="canvas-wrap" id="canvas-wrap">
+    <canvas id="video-canvas"></canvas>
+</div>
+
+<!-- ═══ DARK OVERLAY (fixed, GSAP-controlled) ════════════════════════ -->
+<div id="dark-overlay"></div>
+
+<!-- ═══ MARQUEE (fixed, mid-scroll only) ═════════════════════════════ -->
+<div class="marquee-wrap" id="marquee-wrap">
+    <div class="marquee-text">ASONYX &nbsp;·&nbsp; 3D DESIGN &nbsp;·&nbsp; DIGITAL &nbsp;·&nbsp; MEDIA &nbsp;·&nbsp; BRANDING &nbsp;·&nbsp;&nbsp;&nbsp; ASONYX &nbsp;·&nbsp; 3D DESIGN &nbsp;·&nbsp; DIGITAL &nbsp;·&nbsp; MEDIA &nbsp;·&nbsp; BRANDING &nbsp;·&nbsp;&nbsp;&nbsp;</div>
+</div>
+
+<!-- ═══ NAVBAR ════════════════════════════════════════════════════════ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+        <a href="index.html" class="logo" aria-label="Asonyx Home">ASONYX</a>
+        <div class="nav-links">
+            <a href="#services"  class="nav-link">Services</a>
+            <a href="portfolio.html" class="nav-link">Portfolio</a>
+            <a href="#booking"   class="nav-link">Book Website</a>
+            <a href="#contact"   class="nav-link">Contact</a>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle mobile menu" aria-expanded="false">
+            <div class="bar-wrap"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+        </button>
+    </div>
+</nav>
+
+<!-- ═══ HERO (transparent — canvas IS the background) ════════════════ -->
+<section class="hero-section" id="hero-section">
+    <div class="hero-scrim"></div>
+
+    <div class="hero-content">
+        <div class="hero-eyebrow">
+            <span class="eyebrow-line"></span>
+            EST. 2024 &nbsp;&middot;&nbsp; BEIRUT &nbsp;&middot;&nbsp; DIGITAL AGENCY
+            <span class="eyebrow-line"></span>
+        </div>
+
+        <div class="hero-title-block">
+            <h1 class="hero-title">
+                <span class="word-wrap"><span class="hero-word">Digital</span></span>
+                <span class="word-wrap"><span class="hero-word hero-word--accent">Solutions</span></span>
+                <span class="word-wrap"><span class="hero-word">Reimagined</span></span>
+            </h1>
+        </div>
+
+        <div class="hero-sub">
+            <div class="hero-role-row">
+                <span class="role-prefix">Premium</span>
+                <div class="hero-role-cycler">
+                    <span class="role-item active">3D Design</span>
+                    <span class="role-item">Digital</span>
+                    <span class="role-item">Media</span>
+                    <span class="role-item">Branding</span>
+                </div>
+                <span class="role-suffix">Agency</span>
+            </div>
+        </div>
+
+        <div class="hero-ctas">
+            <a href="#booking" class="btn btn-primary">Book a Project</a>
+            <a href="portfolio.html" class="btn btn-ghost">View Work <span class="btn-arrow">→</span></a>
+        </div>
+    </div>
+
+    <div class="hero-footer">
+        <div class="hero-scroll-hint">
+            <div class="scroll-dot"></div>
+            <span>Scroll to explore</span>
+        </div>
+        <div class="hero-stats-mini">
+            <div class="hstat">
+                <span class="hstat-num">50<span class="hstat-unit">+</span></span>
+                <span class="hstat-label">Projects</span>
+            </div>
+            <div class="hstat-sep"></div>
+            <div class="hstat">
+                <span class="hstat-num">99<span class="hstat-unit">%</span></span>
+                <span class="hstat-label">Satisfaction</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ SCROLL CONTAINER (1000vh) ═════════════════════════════════════ -->
+<div id="scroll-container">
+
+    <!-- 001 · The Craft — longer window, frosted glass panel -->
+    <section class="scroll-section section-content align-left"
+             data-enter="7" data-leave="32" data-animation="slide-left">
+        <div class="section-inner">
+            <span class="section-label">001 &nbsp;/&nbsp; The Craft</span>
+            <h2 class="section-heading">Immersive<br>3D Worlds</h2>
+            <p class="section-body">Next-generation websites with real-time 3D graphics, WebGL, and interactive experiences that stop audiences in their tracks.</p>
+        </div>
+    </section>
+
+    <!-- 002 · We Build -->
+    <section class="scroll-section section-content align-right"
+             data-enter="34" data-leave="58" data-animation="slide-right">
+        <div class="section-inner">
+            <span class="section-label">002 &nbsp;/&nbsp; We Build</span>
+            <h2 class="section-heading">Custom<br>Solutions</h2>
+            <p class="section-body">From bespoke software to high-performance platforms — engineered for scale, built for results that matter.</p>
+        </div>
+    </section>
+
+    <!-- Stats (dark overlay 58–80%) -->
+    <section class="scroll-section section-stats"
+             data-enter="60" data-leave="78" data-animation="stagger-up">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-num-row"><span class="stat-number" data-value="50" data-decimals="0">0</span><span class="stat-suffix">+</span></div>
+                <span class="stat-label">Projects Delivered</span>
+            </div>
+            <div class="stat-sep"></div>
+            <div class="stat">
+                <div class="stat-num-row"><span class="stat-number" data-value="3" data-decimals="0">0</span><span class="stat-suffix">+</span></div>
+                <span class="stat-label">Years Excellence</span>
+            </div>
+            <div class="stat-sep"></div>
+            <div class="stat">
+                <div class="stat-num-row"><span class="stat-number" data-value="99" data-decimals="0">0</span><span class="stat-suffix">%</span></div>
+                <span class="stat-label">Client Satisfaction</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 003 · Your Vision -->
+    <section class="scroll-section section-content align-right"
+             data-enter="80" data-leave="92" data-animation="fade-up">
+        <div class="section-inner">
+            <span class="section-label">003 &nbsp;/&nbsp; Your Vision</span>
+            <h2 class="section-heading">Elevate<br>Your Brand</h2>
+            <p class="section-body">Strategic brand identity, advanced animation, and premium media that resonates with your audience and drives real growth.</p>
+        </div>
+    </section>
+
+    <!-- CTA — dramatic centered, persists forever -->
+    <section class="scroll-section section-cta-full"
+             data-enter="90" data-leave="100" data-animation="cta-reveal" data-persist="true">
+        <div class="cta-full-inner">
+            <span class="cta-eyebrow">Ready to Begin?</span>
+            <h2 class="cta-mega-heading">
+                <span class="cta-mega-word">Start</span>
+                <span class="cta-mega-word">Your</span>
+                <em class="cta-mega-word cta-mega-accent">Project</em>
+            </h2>
+            <a href="#booking" class="cta-mega-btn">
+                Book a Consultation
+                <span class="cta-mega-arrow">→</span>
+            </a>
+        </div>
+    </section>
+
+</div><!-- #scroll-container -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     BELOW: ALL EXISTING PAGE SECTIONS — content & backend unchanged
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- Services -->
+<section id="services" class="services page-section">
+    <div class="container">
+
+        <!-- Section header -->
+        <div class="svc-header">
+            <div>
+                <span class="svc-eyebrow">02 &nbsp;/&nbsp; Services</span>
+                <h2 class="section-title" style="text-align:left;margin-bottom:0">Our <span class="text-cyan">Services</span></h2>
+            </div>
+            <p class="svc-header-desc">Comprehensive digital solutions<br>tailored to your brand's unique vision</p>
+        </div>
+
+        <!-- Bento grid -->
+        <div class="services-bento">
+
+            <!-- 01 · 3D Web Design (large) -->
+            <div class="svc-card svc-span-7">
+                <span class="svc-num">01</span>
+                <div class="svc-visual">
+                    <!-- Rotating wireframe cube -->
+                    <div class="svc-cube-wrap">
+                        <div class="svc-cube">
+                            <div class="svc-face sf"></div><div class="svc-face sb"></div>
+                            <div class="svc-face sl"></div><div class="svc-face sr"></div>
+                            <div class="svc-face st"></div><div class="svc-face sbt"></div>
+                        </div>
+                    </div>
+                    <span class="svc-dot" style="top:18%;left:12%;animation-delay:0s"></span>
+                    <span class="svc-dot" style="top:65%;left:78%;animation-delay:.6s;background:var(--secondary)"></span>
+                    <span class="svc-dot" style="top:30%;left:82%;animation-delay:1.2s"></span>
+                    <span class="svc-dot" style="top:75%;left:22%;animation-delay:1.8s;background:var(--secondary)"></span>
+                </div>
+                <div class="svc-text">
+                    <h3>Immersive 3D<br>Web Design</h3>
+                    <p>Next-generation websites with real-time 3D graphics, WebGL, and interactive virtual experiences that captivate.</p>
+                    <span class="svc-tags">WebGL &nbsp;·&nbsp; Three.js &nbsp;·&nbsp; GSAP &nbsp;·&nbsp; Canvas</span>
+                </div>
+            </div>
+
+            <!-- 02 · Digital Solutions (medium) -->
+            <div class="svc-card svc-span-5">
+                <span class="svc-num">02</span>
+                <div class="svc-visual">
+                    <div class="svc-terminal">
+                        <div class="term-bar"><span></span><span></span><span></span></div>
+                        <div class="term-lines">
+                            <div class="term-line tl-1"><span class="tp">$</span> <span class="tc">build --scale infinity</span></div>
+                            <div class="term-line tl-2"><span class="to">✓ Compiled in 0.8s</span></div>
+                            <div class="term-line tl-3"><span class="tp">$</span> <span class="tc">deploy --env prod</span></div>
+                            <div class="term-line tl-4"><span class="to">✓ Live on CDN edge</span></div>
+                            <div class="term-line tl-5"><span class="tp">$</span> <span class="tcursor">_</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="svc-text">
+                    <h3>Custom Digital<br>Solutions</h3>
+                    <p>Bespoke software, high-performance web apps, and scalable platforms engineered for growth.</p>
+                    <span class="svc-tags">SaaS &nbsp;·&nbsp; API &nbsp;·&nbsp; Cloud &nbsp;·&nbsp; Scalable</span>
+                </div>
+            </div>
+
+            <!-- 03 · Media -->
+            <div class="svc-card svc-span-4">
+                <span class="svc-num">03</span>
+                <div class="svc-visual">
+                    <div class="svc-aperture">
+                        <div class="ap-ring ap-outer"></div>
+                        <div class="ap-ring ap-inner"></div>
+                        <div class="ap-blades">
+                            <div class="ap-blade" style="--ar:0deg"></div><div class="ap-blade" style="--ar:60deg"></div>
+                            <div class="ap-blade" style="--ar:120deg"></div><div class="ap-blade" style="--ar:180deg"></div>
+                            <div class="ap-blade" style="--ar:240deg"></div><div class="ap-blade" style="--ar:300deg"></div>
+                        </div>
+                        <div class="ap-core"></div>
+                    </div>
+                </div>
+                <div class="svc-text">
+                    <h3>Premium Media<br>&amp; Content</h3>
+                    <p>4K video production, photography, and creative content that elevates your brand story.</p>
+                    <span class="svc-tags">4K &nbsp;·&nbsp; Film &nbsp;·&nbsp; Photography</span>
+                </div>
+            </div>
+
+            <!-- 04 · UI/UX -->
+            <div class="svc-card svc-span-4">
+                <span class="svc-num">04</span>
+                <div class="svc-visual">
+                    <div class="svc-cursor-scene">
+                        <div class="ui-mockcard">
+                            <div class="ui-bar"></div>
+                            <div class="ui-bar ui-bar--short"></div>
+                            <div class="ui-btn"></div>
+                        </div>
+                        <div class="ui-cursor"><i class="fas fa-mouse-pointer"></i></div>
+                        <div class="ui-ripple"></div>
+                    </div>
+                </div>
+                <div class="svc-text">
+                    <h3>Intuitive<br>UI/UX Design</h3>
+                    <p>User-centric interfaces designed for maximum engagement, delight, and conversion.</p>
+                    <span class="svc-tags">Figma &nbsp;·&nbsp; Research &nbsp;·&nbsp; Systems</span>
+                </div>
+            </div>
+
+            <!-- 05 · Brand Identity -->
+            <div class="svc-card svc-span-4">
+                <span class="svc-num">05</span>
+                <div class="svc-visual">
+                    <div class="svc-brand-mark">
+                        <div class="bm-diamond bm-outer"></div>
+                        <div class="bm-diamond bm-inner"></div>
+                        <div class="bm-letter">A</div>
+                        <div class="bm-palette">
+                            <span style="background:var(--primary)"></span>
+                            <span style="background:var(--secondary)"></span>
+                            <span style="background:var(--accent)"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="svc-text">
+                    <h3>Strategic<br>Brand Identity</h3>
+                    <p>Complete identities, visual guidelines, and positioning that resonate with your audience.</p>
+                    <span class="svc-tags">Logo &nbsp;·&nbsp; Strategy &nbsp;·&nbsp; Guidelines</span>
+                </div>
+            </div>
+
+            <!-- 06 · Animation & VFX (full-width banner) -->
+            <div class="svc-card svc-span-12 svc-card--banner">
+                <div class="svc-text svc-text--banner">
+                    <span class="svc-num svc-num--banner">06</span>
+                    <h3>Advanced Animation<br><em style="color:var(--primary);font-style:italic">&amp; VFX</em></h3>
+                    <p>Cinematic 3D animations, motion graphics, and visual effects for commercials, presentations, and digital campaigns that leave a lasting impression.</p>
+                    <span class="svc-tags">Cinema4D &nbsp;·&nbsp; After Effects &nbsp;·&nbsp; Motion Graphics &nbsp;·&nbsp; 3D Render</span>
+                </div>
+                <div class="svc-visual svc-visual--banner">
+                    <div class="svc-vfx">
+                        <div class="vfx-ring vr1"></div>
+                        <div class="vfx-ring vr2"></div>
+                        <div class="vfx-ring vr3"></div>
+                        <div class="vfx-core"></div>
+                        <div class="vfx-ray" style="--va:0deg"></div><div class="vfx-ray" style="--va:30deg"></div>
+                        <div class="vfx-ray" style="--va:60deg"></div><div class="vfx-ray" style="--va:90deg"></div>
+                        <div class="vfx-ray" style="--va:120deg"></div><div class="vfx-ray" style="--va:150deg"></div>
+                        <div class="vfx-ray" style="--va:180deg"></div><div class="vfx-ray" style="--va:210deg"></div>
+                        <div class="vfx-ray" style="--va:240deg"></div><div class="vfx-ray" style="--va:270deg"></div>
+                        <div class="vfx-ray" style="--va:300deg"></div><div class="vfx-ray" style="--va:330deg"></div>
+                        <div class="vfx-orbit"></div>
+                        <div class="vfx-orb"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- .services-bento -->
+    </div>
+</section>
+
+<!-- Testimonials Preview -->
+<section class="testimonials-preview page-section">
+    <div class="container">
+        <h2 class="section-title">Client <span class="text-purple">Testimonials</span></h2>
+        <p class="section-subtitle">Hear what our satisfied partners have to say about our work and impact.</p>
+        <div class="testimonial-carousel-preview">
+            <div class="testimonial-card-preview" id="testimonialCardPreview"></div>
+        </div>
+        <div class="cta-center">
+            <a href="portfolio.html#testimonials" class="btn btn-outline">Read All Testimonials</a>
+        </div>
+    </div>
+</section>
+
+<!-- 3D Portfolio Preview -->
+<section class="portfolio-preview page-section">
+    <div class="container">
+        <h2 class="section-title">3D <span class="text-cyan">Portfolio</span></h2>
+        <p class="section-subtitle">Explore our interactive 3D models and creative projects</p>
+        <div class="portfolio-grid">
+            <div class="portfolio-item">
+                <div class="portfolio-image model-container" id="abstract-sphere-container"></div>
+                <div class="portfolio-info">
+                    <h4>Abstract Sphere</h4>
+                    <p>Interactive 3D Model (Three.js)</p>
+                </div>
+            </div>
+        </div>
+        <div class="cta-center">
+            <a href="portfolio.html" class="btn btn-primary">View Full Portfolio</a>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Section (FLIP card + WhatsApp — unchanged) -->
+<section id="booking" class="booking-section page-section">
+    <div class="container">
+        <h2 class="section-title">Book Your <span class="text-cyan">Website</span></h2>
+        <p class="section-subtitle">Ready to create your digital presence? Let's start your project today</p>
+        <div id="app" data-state="overview">
+            <div data-view="overview">
+                <div class="cards">
+                    <div id="restaurant" class="card" style="--color: var(--primary-color);">
+                        <h3>Book Your Website</h3>
+                        <p>Click here to start your project discussion!</p>
+                    </div>
+                </div>
+            </div>
+            <div data-view="details">
+                <div id="detail-card" class="card" style="--color: var(--secondary-color);">
+                    <div class="view-content">
+                        <div class="view-content-container">
+                            <h3>Let's Talk on WhatsApp</h3>
+                            <p>We're ready to discuss your project. Click below to open WhatsApp and send us a message to get started!</p>
+                            <a id="whatsapp-link" href="#" class="btn btn-primary whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i> Start Chat
+                            </a>
+                        </div>
+                    </div>
+                    <button class="close-btn" aria-label="Close booking details">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section (EmailJS form — unchanged backend) -->
+<section id="contact" class="contact page-section">
+    <div class="container">
+        <h2 class="section-title">Let's <span class="text-cyan">Connect</span></h2>
+        <p class="section-subtitle">Ready to bring your vision to life? Get in touch with our team</p>
+        <div class="contact-cards-wrapper">
+            <!-- WhatsApp -->
+            <div class="contact-card-grid-space">
+                <div class="contact-num">01</div>
+                <a href="https://wa.me/96176629850?text=Hello%20Asonyx%2C%20I%20want%20to%20discuss%20a%20project" target="_blank" rel="noopener noreferrer" class="contact-card">
+                    <div class="contact-card-content">
+                        <div class="contact-card-icon"><i class="fab fa-whatsapp"></i></div>
+                        <h3>WhatsApp</h3>
+                        <p>+96176629850</p>
+                        <span class="contact-card-cta">Chat Now</span>
+                    </div>
+                </a>
+            </div>
+            <!-- Instagram -->
+            <div class="contact-card-grid-space">
+                <div class="contact-num">02</div>
+                <a href="https://instagram.com/asonyxmedia" target="_blank" rel="noopener noreferrer" class="contact-card">
+                    <div class="contact-card-content">
+                        <div class="contact-card-icon"><i class="fab fa-instagram"></i></div>
+                        <h3>Follow Us</h3>
+                        <p>@asonyxmedia</p>
+                        <span class="contact-card-cta">Follow</span>
+                    </div>
+                </a>
+            </div>
+            <!-- Contact Form (EmailJS — backend unchanged) -->
+            <div class="contact-card-grid-space">
+                <div class="contact-num">03</div>
+                <div class="contact-card contact-form-card">
+                    <div class="form-card-header">
+                        <div class="form-header-icon"><i class="fas fa-paper-plane"></i></div>
+                        <h3>Send a Message</h3>
+                    </div>
+                    <form id="contact-form" class="contact-form-body">
+                        <div class="form-field">
+                            <input type="text" name="user_name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-field">
+                            <input type="email" name="user_email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-field">
+                            <textarea name="message" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="form-submit-btn">
+                            Send Message <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-top">
+            <div class="footer-brand-col">
+                <img src="LOGOBCK.png" alt="Asonyx" class="footer-logo-img" loading="lazy"/>
+                <p class="footer-tagline">3D Digital Solutions &bull; Media Agency</p>
+                <p class="footer-location"><i class="fas fa-map-marker-alt"></i> Beirut, Lebanon</p>
+            </div>
+            <div class="footer-nav-col">
+                <span class="footer-col-label">Navigation</span>
+                <a href="index.html">Home</a>
+                <a href="index.html#services">Services</a>
+                <a href="portfolio.html">Portfolio</a>
+                <a href="index.html#booking">Book Website</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+            <div class="footer-nav-col">
+                <span class="footer-col-label">Services</span>
+                <a href="index.html#services">3D Web Design</a>
+                <a href="index.html#services">Digital Solutions</a>
+                <a href="index.html#services">UI/UX Design</a>
+                <a href="index.html#services">Brand Identity</a>
+                <a href="index.html#services">Animation &amp; VFX</a>
+            </div>
+            <div class="footer-nav-col">
+                <span class="footer-col-label">Get In Touch</span>
+                <a href="https://wa.me/96176629850" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="https://instagram.com/asonyxmedia" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
+                <a href="mailto:asonyxmedia@gmail.com"><i class="fas fa-envelope"></i> Email</a>
+                <a href="tel:+96176629850"><i class="fas fa-phone"></i> +961 76 629 850</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span class="footer-copy">&copy; 2026 Asonyx. All rights reserved.</span>
+            <span class="footer-copy" style="color:var(--text-3)">Website Creation &bull; Digital Solutions &bull; Media Agency</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Mobile Side Menu -->
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile navigation">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+    </button>
+    <a href="#services"      class="nav-link">Services</a>
+    <a href="portfolio.html" class="nav-link">Portfolio</a>
+    <a href="#booking"       class="nav-link">Book Website</a>
+    <a href="#contact"       class="nav-link">Contact</a>
+</div>
+<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+<!-- Three.js for abstract sphere -->
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.148.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.148.0/examples/jsm/"}}</script>
+<script type="module" src="js/abstract-sphere.js"></script>
+
+<!-- CDN stack -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+
+<!-- New scroll/canvas logic -->
+<script src="js/main.js"></script>
+
+<!-- Portfolio data (testimonials) + booking FLIP + mobile menu -->
+<script src="portfolio.js"></script>
+<script src="script.js"></script>
+
+<!-- EmailJS (contact form backend — unchanged) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+    const PUBLIC_KEY  = 'LVLIMZaLrf6fQKf5y';
+    const SERVICE_ID  = 'service_esre1rj';
+    const TEMPLATE_ID = 'template_bmf93t2';
+    (function(){ emailjs.init(PUBLIC_KEY); })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('contact-form');
+        if (!form) return;
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.innerHTML = 'Sending… <i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                from_name:  form.user_name.value,
+                from_email: form.user_email.value,
+                message:    form.message.value
+            }).then(function() {
+                btn.innerHTML = '✓ Message Sent! <i class="fas fa-check"></i>';
+                btn.classList.add('sent');
+                form.reset();
+                setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('sent'); btn.disabled = false; }, 3500);
+            }, function() {
+                btn.innerHTML = '✗ Failed — Try Again';
+                btn.classList.add('error');
+                setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('error'); btn.disabled = false; }, 3500);
+            });
+        });
+    });
+</script>
+</body>
+</html>
