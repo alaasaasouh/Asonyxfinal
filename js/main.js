@@ -4,7 +4,7 @@
    ================================================================= */
 'use strict';
 
-const FRAME_COUNT = 200;
+const FRAME_COUNT = 100;
 const FRAME_SPEED = 1.9;   // product anim completes ~53% scroll
 const IMAGE_SCALE = 0.88;  // padded cover sweet spot
 
