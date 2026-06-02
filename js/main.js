@@ -4,7 +4,7 @@
    ================================================================= */
 'use strict';
 
-const FRAME_COUNT = 100;
+const FRAME_COUNT = 200;
 const FRAME_SPEED = 1.9;   // product anim completes ~53% scroll
 const IMAGE_SCALE = 0.88;  // padded cover sweet spot
 
@@ -26,16 +26,24 @@ let   loaded     = 0;
 let   curFrame   = 0;
 let   bgColor    = '#050a12';
 
-// ── 1. Lenis smooth scroll (must be first) ─────────────────────────
-const lenis = new Lenis({
-    duration:      1.2,
-    easing:        t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel:   true,
-    wheelMultiplier: 1,
-});
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add(time => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
+// ── 1. Scroll setup — Lenis on desktop, native on touch ────────────
+const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+let lenis = null;
+
+if (!isTouchDevice) {
+    lenis = new Lenis({
+        duration:      1.2,
+        easing:        t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel:   true,
+        wheelMultiplier: 1,
+    });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(time => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+}
+
+// Native scroll fallback — keeps ScrollTrigger in sync on mobile
+window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
 
 // ── 2. Canvas ──────────────────────────────────────────────────────
 let rafPending = false; // RAF flag — prevents redundant draws per frame
@@ -340,9 +348,15 @@ function initPageSections() {
 
 // ── 12. Navbar ──────────────────────────────────────────────────────
 function initNavbarScroll() {
-    lenis.on('scroll', ({ scroll }) => {
-        navbar?.classList.toggle('scrolled', scroll > 60);
-    });
+    if (lenis) {
+        lenis.on('scroll', ({ scroll }) => {
+            navbar?.classList.toggle('scrolled', scroll > 60);
+        });
+    } else {
+        window.addEventListener('scroll', () => {
+            navbar?.classList.toggle('scrolled', window.scrollY > 60);
+        }, { passive: true });
+    }
 }
 
 // ── 13. Mobile menu ─────────────────────────────────────────────────
