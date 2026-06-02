@@ -207,7 +207,7 @@ a   { text-decoration:none; color:inherit; }
     justify-content: space-between;
     text-align: center;
     padding-top: max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem));
-    overflow-x: hidden;  /* allow vertical breathing, prevent horizontal bleed */
+    /* overflow-x removed — was trapping iOS touch scroll inside the hero */
 }
 
 /* Minimal scrim — video blazes full, just gentle edges for text */
