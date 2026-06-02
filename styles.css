@@ -1221,7 +1221,7 @@ section.page-section { padding:100px 0; }
     .cta-mega-btn      { font-size:.72rem; padding:1rem 2.5rem; }
 
     /* scroll container height */
-    #scroll-container { height:900vh; }
+    #scroll-container { height:550vh; }
 
     /* services */
     .svc-card--banner      { flex-direction:column; padding:1.5rem; }
@@ -1279,7 +1279,7 @@ section.page-section { padding:100px 0; }
     .cta-mega-btn     { font-size:.68rem; padding:.9rem 2rem; margin-top:2.5rem; }
 
     /* scroll container */
-    #scroll-container { height:820vh; }
+    #scroll-container { height:420vh; }
 
     /* marquee */
     .marquee-text { font-size:18vw; }
