@@ -27,7 +27,7 @@ let   curFrame   = 0;
 let   bgColor    = '#050a12';
 
 // ── 1. Scroll setup — Lenis on desktop, native on touch ────────────
-const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 let lenis = null;
 
 if (!isTouchDevice) {
@@ -122,6 +122,8 @@ async function preload() {
 // ── 4. Boot all GSAP after loader hides ────────────────────────────
 function bootGSAP() {
     gsap.registerPlugin(ScrollTrigger);
+    // On touch devices, poll scroll position every rAF frame — iOS defers scroll events
+    if (isTouchDevice) gsap.ticker.add(() => ScrollTrigger.update());
     playHeroReveal();
     initFrameScrub();
     initScrollSections();
