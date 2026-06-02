@@ -429,31 +429,6 @@ function setupSlideNavigator() {
     setupCarouselControls();
 }
 
-// =================================================================
-// MOBILE MENU SETUP (Copied from script.js for consistency)
-// =================================================================
-
-/**
- * Handles the opening and closing of the mobile navigation menu.
- */
-function setupMobileMenu() {
-    if (!menuToggle || !mobileMenu) return;
-
-    menuToggle.addEventListener('click', () => {
-        mobileMenu.classList.toggle('open');
-        menuToggle.classList.toggle('open');
-        menuToggle.setAttribute('aria-expanded', menuToggle.classList.contains('open'));
-    });
-
-    // Close menu when a navigation link is clicked
-    mobileMenu.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.remove('open');
-            menuToggle.classList.remove('open');
-            menuToggle.setAttribute('aria-expanded', 'false');
-        });
-    });
-}
 
 // =================================================================
 // SMOOTH SCROLLING (Copied from script.js for consistency)
@@ -492,7 +467,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSlideNavigator();
 
     // 3. Setup general UI elements
-    setupMobileMenu();
     setupSmoothScrolling();
 
     console.log('✓ Portfolio script loaded successfully with 3D Slide Navigator!');
