@@ -924,16 +924,25 @@
 <script>
 'use strict';
 
-/* ── Lenis ──────────────────────────────────────────────────────── */
-const lenis = new Lenis({ duration:1.2, easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)), smoothWheel:true });
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add(t => lenis.raf(t * 1000));
-gsap.ticker.lagSmoothing(0);
+/* ── Lenis — desktop only, native scroll on touch ───────────────── */
+const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+let lenis = null;
 
-/* ── Navbar scroll state ────────────────────────────────────────── */
-lenis.on('scroll', ({ scroll }) => {
-    document.querySelector('.navbar').classList.toggle('scrolled', scroll > 60);
-});
+if (!isTouchDevice) {
+    lenis = new Lenis({ duration:1.2, easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)), smoothWheel:true });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    lenis.on('scroll', ({ scroll }) => {
+        document.querySelector('.navbar').classList.toggle('scrolled', scroll > 60);
+    });
+}
+
+/* Native scroll fallback for mobile */
+window.addEventListener('scroll', () => {
+    ScrollTrigger.update();
+    document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
 
 /* ── Hero entrance — sequenced timeline ─────────────────────────── */
 const heroTl = gsap.timeline({ delay: .15 });
@@ -1099,7 +1108,7 @@ function openPreview(url, name) {
 
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
-    lenis.stop();
+    if (lenis) lenis.stop();
 
     setTimeout(() => { iframe.src = url; }, 80);
     iframe.onload = () => { loading.style.display = 'none'; };
@@ -1108,7 +1117,7 @@ function openPreview(url, name) {
 function closePreview() {
     modal.classList.remove('open');
     document.body.style.overflow = '';
-    lenis.start();
+    if (lenis) lenis.start();
     setTimeout(() => { iframe.src = 'about:blank'; }, 400);
 }
 
