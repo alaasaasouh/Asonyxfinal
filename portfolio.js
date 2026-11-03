@@ -416,6 +416,7 @@ function setupCarouselControls() {
  * Initializes all components of the 3D Slide Navigator.
  */
 function setupSlideNavigator() {
+    if (!carouselTrack) return;
     // Set the initial perspective on the container
     const carouselContainer = document.querySelector('.carousel-container');
     if (carouselContainer) {
@@ -441,12 +442,13 @@ const setupSmoothScrolling = () => {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
-            const target = document.querySelector(href);
+            if (!href || href === '#') return;
+            const target = document.getElementById(href.slice(1));
 
             if (target) {
                 e.preventDefault();
                 target.scrollIntoView({
-                    behavior: 'smooth',
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
                     block: 'start'
                 });
             }

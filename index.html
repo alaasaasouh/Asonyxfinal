@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Asonyx - Premium 3D Digital Solutions Agency offering immersive web design, custom digital solutions, and premium media services.">
     <meta name="theme-color" content="#050a12">
     <title>Asonyx — 3D Digital Solutions Agency</title>
@@ -74,8 +74,6 @@
 
 <!-- ═══ HERO (transparent — canvas IS the background) ════════════════ -->
 <section class="hero-section" id="hero-section">
-    <div class="hero-scrim"></div>
-
     <div class="hero-content">
         <div class="hero-eyebrow">
             <span class="eyebrow-line"></span>
@@ -372,7 +370,7 @@
             <div class="testimonial-card-preview" id="testimonialCardPreview"></div>
         </div>
         <div class="cta-center">
-            <a href="portfolio.html#testimonials" class="btn btn-outline">Read All Testimonials</a>
+            <a href="portfolio.html" class="btn btn-outline">Explore Selected Work</a>
         </div>
     </div>
 </section>
@@ -405,14 +403,14 @@
         <div id="app" data-state="overview">
             <div data-view="overview">
                 <div class="cards">
-                    <div id="restaurant" class="card" style="--color: var(--primary-color);">
+                    <div id="restaurant" class="card" style="--color: var(--primary);">
                         <h3>Book Your Website</h3>
                         <p>Click here to start your project discussion!</p>
                     </div>
                 </div>
             </div>
             <div data-view="details">
-                <div id="detail-card" class="card" style="--color: var(--secondary-color);">
+                <div id="detail-card" class="card" style="--color: var(--secondary);">
                     <div class="view-content">
                         <div class="view-content-container">
                             <h3>Let's Talk on WhatsApp</h3>
@@ -471,13 +469,13 @@
                     </div>
                     <form id="contact-form" class="contact-form-body">
                         <div class="form-field">
-                            <input type="text" name="user_name" placeholder="Your Name" required>
+                            <input type="text" name="user_name" placeholder="Your Name" aria-label="Your name" autocomplete="name" required>
                         </div>
                         <div class="form-field">
-                            <input type="email" name="user_email" placeholder="Your Email" required>
+                            <input type="email" name="user_email" placeholder="Your Email" aria-label="Your email" autocomplete="email" required>
                         </div>
                         <div class="form-field">
-                            <textarea name="message" placeholder="Your Message" required></textarea>
+                            <textarea name="message" placeholder="Your Message" aria-label="Your message" required></textarea>
                         </div>
                         <button type="submit" class="form-submit-btn">
                             Send Message <i class="fas fa-arrow-right"></i>
@@ -563,7 +561,7 @@
     const PUBLIC_KEY  = 'LVLIMZaLrf6fQKf5y';
     const SERVICE_ID  = 'service_esre1rj';
     const TEMPLATE_ID = 'template_bmf93t2';
-    (function(){ emailjs.init(PUBLIC_KEY); })();
+    (function(){ window.emailjs?.init(PUBLIC_KEY); })();
 
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('contact-form');
@@ -574,11 +572,12 @@
             const orig = btn.innerHTML;
             btn.innerHTML = 'Sending… <i class="fas fa-spinner fa-spin"></i>';
             btn.disabled = true;
-            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+            const request = window.emailjs ? emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 from_name:  form.user_name.value,
                 from_email: form.user_email.value,
                 message:    form.message.value
-            }).then(function() {
+            }) : Promise.reject(new Error('Email service unavailable'));
+            request.then(function() {
                 btn.innerHTML = '✓ Message Sent! <i class="fas fa-check"></i>';
                 btn.classList.add('sent');
                 form.reset();

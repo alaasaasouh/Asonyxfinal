@@ -30,10 +30,12 @@ body {
     color: var(--text);
     line-height: 1.6;
     overscroll-behavior: none;
-    touch-action: pan-y;
+    touch-action: pan-y pinch-zoom;
 }
 img { display:block; max-width:100%; }
 a   { text-decoration:none; color:inherit; }
+[id] { scroll-margin-top: 6rem; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 5px; }
 
 /* ── 3. Loader ──────────────────────────────────────────────────── */
 #loader {
@@ -106,6 +108,7 @@ a   { text-decoration:none; color:inherit; }
 /* ── 4. Canvas + Overlay + Marquee (fixed layer) ──────────────── */
 .canvas-wrap {
     position: fixed; inset: 0;
+    background: url('frames/frame_0001.jpg') center / cover no-repeat;
     z-index: 0;
     transform: translateZ(0); /* force GPU compositing layer */
     pointer-events: none; /* never capture touch/mouse — scroll must pass through */
@@ -197,7 +200,7 @@ a   { text-decoration:none; color:inherit; }
 .hero-section {
     position: relative;
     z-index: 4;
-    height: 100svh;
+    min-height: 100svh;
     background: transparent;
     display: flex;
     flex-direction: column;
@@ -205,24 +208,13 @@ a   { text-decoration:none; color:inherit; }
     justify-content: space-between;
     text-align: center;
     padding-top: max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem));
-    touch-action: pan-y; /* explicitly allow vertical scroll — not inherited from body */
-}
-
-/* Minimal scrim — video blazes full, just gentle edges for text */
-.hero-scrim {
-    position: absolute; inset: 0;
-    background:
-        /* bottom gradient so CTAs + stats remain readable */
-        linear-gradient(to top, rgba(5,10,18,.72) 0%, rgba(5,10,18,.18) 28%, transparent 55%),
-        /* very subtle top for navbar legibility */
-        linear-gradient(to bottom, rgba(5,10,18,.45) 0%, transparent 18%);
-    z-index: 0;
-    pointer-events: none;
+    touch-action: pan-y pinch-zoom;
 }
 
 .hero-content {
     position: relative; z-index: 1;
     padding: 0 5vw;
+    padding-block: 2rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -238,7 +230,6 @@ a   { text-decoration:none; color:inherit; }
     color: var(--primary);
     margin-bottom: 2rem;
     /* no opacity:0 — GSAP sets this at runtime via gsap.set() */
-    text-shadow: 0 0 20px rgba(0,217,255,.4), 0 1px 8px rgba(0,0,0,.8);
 }
 .eyebrow-line {
     display: block; width: 0px; height: 1px;   /* animated 0 → 28px by GSAP */
@@ -256,17 +247,10 @@ a   { text-decoration:none; color:inherit; }
     line-height: .95;
     color: #fff;
     text-align: center;
-    text-shadow:
-        0 2px 8px rgba(0,0,0,.9),
-        0 8px 40px rgba(0,0,0,.7),
-        0 0 80px rgba(0,0,0,.5);
 }
 .hero-word { display:block; }
 .hero-word--accent {
     color: var(--primary); font-style:italic;
-    text-shadow:
-        0 2px 8px rgba(0,0,0,.8),
-        0 0 40px rgba(0,217,255,.35);
 }
 
 .hero-sub { margin-top: 2.5rem; width: 100%; }
@@ -276,11 +260,10 @@ a   { text-decoration:none; color:inherit; }
     font-size: clamp(.85rem, 1.4vw, 1rem);
     color: rgba(255,255,255,.8);
     /* no opacity:0 — GSAP handles this */
-    text-shadow: 0 1px 12px rgba(0,0,0,.9);
 }
 .hero-role-cycler {
     position: relative; overflow: hidden;
-    height: 1.5em; min-width: 9ch;
+    height: 1.5em; width: 10.5ch;
     display: inline-block;
 }
 .role-item {
@@ -1094,10 +1077,13 @@ section.page-section { padding:100px 0; }
     display: flex; flex-direction: column;
     justify-content: center;
     padding: 5rem 0 3rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    visibility: hidden;
     z-index: 600;
-    transition: right .4s cubic-bezier(.4,0,.2,1);
+    transition: right .4s cubic-bezier(.4,0,.2,1), visibility 0s .4s;
 }
-.mobile-menu.open { right:0; }
+.mobile-menu.open { right:0; visibility:visible; transition-delay:0s; }
 
 /* brand inside drawer */
 .mobile-menu::before {
@@ -1315,9 +1301,25 @@ section.page-section { padding:100px 0; }
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
     }
-    #scroll-container { height: 100vh; }
-    .scroll-section   { position: static; transform: none;
-                        visibility: visible; opacity: 1; }
+}
+
+/* Keep every story panel readable when motion is reduced or its library fails. */
+.static-story #scroll-container { height: auto; padding: 3rem 0; }
+.static-story .scroll-section {
+    position: relative; top: auto; transform: none;
+    visibility: visible; opacity: 1; margin-block: 3rem;
+    will-change: auto;
+}
+.static-story #dark-overlay, .static-story .marquee-wrap { display: none; }
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero-content { padding-top: 1.5rem; padding-bottom: 2rem; }
+    .hero-eyebrow { margin-bottom: 1.2rem; }
+    .hero-sub, .hero-ctas { margin-top: 1.5rem; }
+    .hero-footer { padding-bottom: 1.5rem; }
+    .mobile-menu { justify-content: flex-start; }
+    .mobile-menu .nav-link { padding-block: .35rem; font-size: 1.5rem; }
+    .mobile-menu::after { position: static; margin-top: 1.5rem; }
 }
 
 /* ── Print / deploy safety ───────────────────────────────── */

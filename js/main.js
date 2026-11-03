@@ -6,7 +6,6 @@
 
 const FRAME_COUNT = 200;
 const FRAME_SPEED = 1.9;   // product anim completes ~53% scroll
-const IMAGE_SCALE = 0.88;  // padded cover sweet spot
 
 // ── DOM ────────────────────────────────────────────────────────────
 const loader      = document.getElementById('loader');
@@ -24,13 +23,14 @@ const navbar      = document.querySelector('.navbar');
 const frames     = new Array(FRAME_COUNT).fill(null);
 let   loaded     = 0;
 let   curFrame   = 0;
-let   bgColor    = '#050a12';
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hasScrollAnimation = Boolean(window.gsap && window.ScrollTrigger);
 
 // ── 1. Scroll setup — Lenis on desktop, native on touch ────────────
 const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 let lenis = null;
 
-if (!isTouchDevice) {
+if (!isTouchDevice && !reduceMotion && hasScrollAnimation && window.Lenis) {
     lenis = new Lenis({
         duration:      1.2,
         easing:        t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -43,7 +43,9 @@ if (!isTouchDevice) {
 }
 
 // Native scroll fallback — keeps ScrollTrigger in sync on mobile
-window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
+if (hasScrollAnimation) {
+    window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
+}
 
 // ── 2. Canvas ──────────────────────────────────────────────────────
 let rafPending = false; // RAF flag — prevents redundant draws per frame
@@ -56,23 +58,14 @@ function resizeCanvas() {
     draw(curFrame);
 }
 
-function sampleBg(img) {
-    const t = document.createElement('canvas');
-    t.width = t.height = 4;
-    const tc = t.getContext('2d');
-    tc.drawImage(img, 0, 0, 4, 4);
-    const d = tc.getImageData(0, 0, 1, 1).data;
-    bgColor = `rgb(${d[0]},${d[1]},${d[2]})`;
-}
-
 function draw(idx) {
-    const img = frames[idx];
-    const cw  = window.innerWidth, ch = window.innerHeight;
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, cw, ch);
+    // Keep the last available image while later frames arrive.
+    const img = frames[idx] || frames.slice(0, idx).findLast(Boolean) || frames.find(Boolean);
     if (!img) return;
+    const cw  = window.innerWidth, ch = window.innerHeight;
     const { naturalWidth: iw, naturalHeight: ih } = img;
-    const s = Math.max(cw / iw, ch / ih) * IMAGE_SCALE;
+    // Cover the viewport: padding the image exposed dark bands around the hero.
+    const s = Math.max(cw / iw, ch / ih);
     ctx.drawImage(img, (cw - iw * s) / 2, (ch - ih * s) / 2, iw * s, ih * s);
 }
 
@@ -85,27 +78,34 @@ const loaderRing = document.getElementById('loaderRingEl');
 function loadFrame(i) {
     return new Promise(resolve => {
         const img = new Image();
-        img.src   = `frames/frame_${String(i + 1).padStart(4, '0')}.jpg`;
-        img.onload = () => {
-            frames[i] = img;
+        const finish = () => {
             loaded++;
-            if (i % 20 === 0) sampleBg(img);
-            const pct = loaded / FRAME_COUNT;
-            if (loaderRing) loaderRing.style.strokeDashoffset = RING_CIRC * (1 - pct);
-            if (loaderPct)  loaderPct.textContent = Math.round(pct * 100) + '%';
+            if (!loader?.classList.contains('hidden')) {
+                const pct = Math.min(loaded / 12, 1);
+                if (loaderRing) loaderRing.style.strokeDashoffset = RING_CIRC * (1 - pct);
+                if (loaderPct) loaderPct.textContent = Math.round(pct * 100) + '%';
+            }
             resolve();
         };
-        img.onerror = () => { loaded++; resolve(); };
+        img.onload = () => {
+            frames[i] = img;
+            if (i === curFrame) draw(curFrame);
+            finish();
+        };
+        img.onerror = finish;
+        img.src = `frames/frame_${String(i + 1).padStart(4, '0')}.jpg`;
     });
 }
 
 async function preload() {
     resizeCanvas();
     // Phase 1: first 12 frames fast
-    await Promise.all(Array.from({ length: 12 }, (_, i) => loadFrame(i)));
+    const firstFrames = Promise.all(Array.from({ length: reduceMotion ? 1 : 12 }, (_, i) => loadFrame(i)));
+    // A slow image request must not keep navigation behind a full-screen loader.
+    await Promise.race([firstFrames, new Promise(resolve => setTimeout(resolve, 2500))]);
     draw(0);
-    // Phase 2: rest
-    await Promise.all(Array.from({ length: FRAME_COUNT - 12 }, (_, i) => loadFrame(i + 12)));
+    if (loaderRing) loaderRing.style.strokeDashoffset = 0;
+    if (loaderPct) loaderPct.textContent = '100%';
 
     // Hide loader then boot — timeout fallback if transitionend never fires
     if (loader) {
@@ -117,10 +117,28 @@ async function preload() {
     } else {
         bootGSAP();
     }
+
+    // Stream the remaining animation with bounded requests after the hero is ready.
+    if (!reduceMotion && hasScrollAnimation) {
+        await firstFrames;
+        let nextFrame = 12;
+        await Promise.all(Array.from({ length: 6 }, async () => {
+            while (nextFrame < FRAME_COUNT) await loadFrame(nextFrame++);
+        }));
+        draw(curFrame);
+    }
 }
 
 // ── 4. Boot all GSAP after loader hides ────────────────────────────
 function bootGSAP() {
+    initNavbarScroll();
+    if (reduceMotion || !hasScrollAnimation) {
+        document.documentElement.classList.add('static-story');
+        document.querySelectorAll('.stat-number').forEach(el => {
+            el.textContent = Number(el.dataset.value).toFixed(Number(el.dataset.decimals || 0));
+        });
+        return;
+    }
     gsap.registerPlugin(ScrollTrigger);
     // On touch devices, poll scroll position every rAF frame — iOS defers scroll events
     if (isTouchDevice) gsap.ticker.add(() => ScrollTrigger.update());
@@ -131,7 +149,6 @@ function bootGSAP() {
     initMarquee();
     initCounters();
     initPageSections();
-    initNavbarScroll();
     setTimeout(() => ScrollTrigger.refresh(true), 300);
 }
 
@@ -203,7 +220,7 @@ function initDarkOverlay() {
         onUpdate(self) {
             const p = self.progress;
             let op = 0;
-            if      (p >= E - F && p < E)  op = (p - (E - F)) / F;
+            if      (p >= E - F && p < E)  op = 0.93 * (p - (E - F)) / F;
             else if (p >= E && p <= L)      op = 0.93;
             else if (p > L && p <= L + F)   op = 0.93 * (1 - (p - L) / F);
             if (overlay) overlay.style.opacity = op;
@@ -255,7 +272,9 @@ function initScrollSections() {
             '.cta-eyebrow,.cta-mega-word,.cta-mega-btn'
         )];
 
-        sec.style.top = `${mid * 100}%`;
+        // Match the trigger's scrollable distance, keeping each panel centered
+        // at its midpoint instead of clipping early panels behind the navbar.
+        sec.style.top = `calc(${mid * 100}% + ${(0.5 - mid) * 100}vh)`;
         gsap.set(sec, { autoAlpha: 0 });
 
         let tl    = null;
@@ -350,6 +369,7 @@ function initPageSections() {
 
 // ── 12. Navbar ──────────────────────────────────────────────────────
 function initNavbarScroll() {
+    navbar?.classList.toggle('scrolled', window.scrollY > 60);
     if (lenis) {
         lenis.on('scroll', ({ scroll }) => {
             navbar?.classList.toggle('scrolled', scroll > 60);
@@ -369,24 +389,64 @@ function initMobileMenu() {
     const overlay = document.getElementById('mobileMenuOverlay');
     if (!toggle || !menu) return;
 
-    const open  = () => { menu.classList.add('open'); toggle.classList.add('open'); overlay?.classList.add('visible'); toggle.setAttribute('aria-expanded','true'); };
-    const close_ = () => { menu.classList.remove('open'); toggle.classList.remove('open'); overlay?.classList.remove('visible'); toggle.setAttribute('aria-expanded','false'); };
+    let previousOverflow = '';
+    menu.inert = true;
+    menu.setAttribute('aria-hidden', 'true');
+    const open = () => {
+        previousOverflow = document.body.style.overflow;
+        menu.inert = false;
+        menu.removeAttribute('aria-hidden');
+        menu.classList.add('open');
+        toggle.classList.add('open');
+        overlay?.classList.add('visible');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        lenis?.stop();
+        close?.focus({ preventScroll: true });
+    };
+    const close_ = () => {
+        if (!menu.classList.contains('open')) return;
+        menu.classList.remove('open');
+        toggle.classList.remove('open');
+        overlay?.classList.remove('visible');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.focus({ preventScroll: true });
+        menu.inert = true;
+        menu.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = previousOverflow;
+        lenis?.start();
+    };
 
     toggle.addEventListener('click', () => menu.classList.contains('open') ? close_() : open());
     close?.addEventListener('click', close_);
     overlay?.addEventListener('click', close_);
     menu.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', close_));
+    document.addEventListener('keydown', event => {
+        if (!menu.classList.contains('open')) return;
+        if (event.key === 'Escape') close_();
+        if (event.key === 'Tab') {
+            const links = [...menu.querySelectorAll('button, a[href]')];
+            const first = links[0], last = links[links.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault(); last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault(); first.focus();
+            }
+        }
+    });
+    window.addEventListener('resize', () => { if (window.innerWidth > 768) close_(); });
 }
 
 // ── 14. Role cycler ─────────────────────────────────────────────────
 function initRoleCycler() {
     const items = [...document.querySelectorAll('.role-item')];
-    if (!items.length) return;
+    if (!items.length || reduceMotion) return;
     let cur = 0;
     setInterval(() => {
-        items[cur].classList.remove('active');
-        items[cur].classList.add('exit');
-        setTimeout(() => items[cur].classList.remove('exit'), 420);
+        const previous = items[cur];
+        previous.classList.remove('active');
+        previous.classList.add('exit');
+        setTimeout(() => previous.classList.remove('exit'), 420);
         cur = (cur + 1) % items.length;
         items[cur].classList.add('active');
     }, 2400);
